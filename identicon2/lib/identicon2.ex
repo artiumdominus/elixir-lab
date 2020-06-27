@@ -28,23 +28,23 @@ defmodule Identicon2 do
   end
 
   def pick_colors(image) do
-    [a, b, c, d, e, f, g, h | tail] = image.bin
-    <<red>> = <<a::1, b::1, c::1, d::1, e::1, f::1, g::1, h::1>>
-    [a, b, c, d, e, f, g, h | tail] = tail
-    <<green>> = <<a::1, b::1, c::1, d::1, e::1, f::1, g::1, h::1>>
-    [a, b, c, d, e, f, g, h | tail] = tail
-    <<blue>> = <<a::1, b::1, c::1, d::1, e::1, f::1, g::1, h::1>>
+    {color1, bin} = extract_color image.bin
+    {color2, bin} = extract_color bin
+    %Identicon2.Image{image | color1: color1, color2: color2, bin: bin}
+  end
 
-    image = %Identicon2.Image{image | color1: {red, green, blue}}
+  def extract_color(bin) do
+    {red, bin} = extract_number bin
+    {green, bin} = extract_number bin
+    {blue, bin} = extract_number bin
 
-    [a, b, c, d, e, f, g, h | tail] = tail
-    <<red>> = <<a::1, b::1, c::1, d::1, e::1, f::1, g::1, h::1>>
-    [a, b, c, d, e, f, g, h | tail] = tail
-    <<green>> = <<a::1, b::1, c::1, d::1, e::1, f::1, g::1, h::1>>
-    [a, b, c, d, e, f, g, h | tail] = tail
-    <<blue>> = <<a::1, b::1, c::1, d::1, e::1, f::1, g::1, h::1>>
+    {{red, green, blue}, bin}
+  end
 
-    %Identicon2.Image{image | color2: {red, green, blue}, bin: tail}
+  def extract_number(bin) do
+    [a, b, c, d, e, f, g, h | tail] = bin
+    <<number>> = <<a::1, b::1, c::1, d::1, e::1, f::1, g::1, h::1>>
+    {number, tail}
   end
 
   def tritalize(image) do
